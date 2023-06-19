@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/linq.js/4.0.1/linq.min.js" integrity="sha512-Q2xRYzPj7eDweeLx0dwWLq9q2rObM/13rTgfGWyv1HrAVuZifYD/wmWGzW56yh1SFaypv0glxOygfcWAqX57lg==" crossorigin="anonymous" referrerpolicy="no-referrer" type="module"></script>
+		<link rel="stylesheet" href="css/styles.css">
+	</head>
+	<body>
+		<input id="input-directory" type="file" webkitdirectory multiple accept="video/mp4,video/x-m4v,video/*">
+
+		<div class="video-container">
+				<div class="front">
+						<video id="video-front" src="file:///D:/TeslaCam/MCU-2/TeslaCam/RecentClips/2023-06-18_13-49-31-front.mp4"></video>
+				</div>
+				<div class="left">
+						<video id="video-left" src="file:///D:/TeslaCam/MCU-2/TeslaCam/RecentClips/2023-06-18_13-49-31-left_repeater.mp4"></video>
+				</div>
+				<div class="right">
+						<video id="video-right" src="file:///D:/TeslaCam/MCU-2/TeslaCam/RecentClips/2023-06-18_13-49-31-right_repeater.mp4"></video>
+				</div>
+				<div class="back">
+						<video id="video-back" src="file:///D:/TeslaCam/MCU-2/TeslaCam/RecentClips/2023-06-18_13-49-31-back.mp4"></video>
+				</div>
+		</div>
+		
+		<script src="js/bundle.js"></script>
+	</body>
+</html>

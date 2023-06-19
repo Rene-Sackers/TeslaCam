@@ -1,0 +1,38 @@
+.video-container {
+	display: grid;           
+	grid-template-areas:
+		"left front right"
+		"left back  right";
+	grid-template-columns: 1fr 50% 1fr;
+	grid-template-rows: 50% 50%;
+	
+	height: 90vh;
+	border: 1px solid #000;
+}
+
+.video-container > div {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.video-container video {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.video-container .front {
+	grid-area: front;
+}
+
+.video-container .left {
+	grid-area: left;
+}
+
+.video-container .right {
+	grid-area: right;
+}
+
+.video-container .back {
+	grid-area: back;
+}
