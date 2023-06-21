@@ -1,37 +1,43 @@
-import { Cameras, VideoEntryTypes } from "./Enums";
-import { fileNameRegex, eventFolderRegex } from "./main";
+import { Cameras, VideoEntryTypes } from "./Models";
 
-export default class VideoEntry {
+const fileNameRegex = /(?<year>20\d{2})\-(?<month>[0-1][0-9])\-(?<day>[0-3][0-9])_(?<hour>[0-2][0-9])\-(?<minute>[0-5][0-9])\-(?<second>[0-5][0-9])\-(?<camera>back|front|left_repeater|right_repeater)/
+
+export const eventFolderRegex = /(?<event>(?<year>20\d{2})\-(?<month>[0-1][0-9])\-(?<day>[0-3][0-9])_(?<hour>[0-2][0-9])\-(?<minute>[0-5][0-9])\-(?<second>[0-5][0-9]))/
+
+export class VideoFile {
 	public url: string;
 	public fileName: string;
 	public eventFolderName: string;
 	public type: VideoEntryTypes | null;
-	public date: Date;
+	public startDate: Date;
+	public endDate: Date;
 	public durationInSeconds: number | null;
 	public camera: Cameras;
 
-	static async create(file) {
+	static async create(file: File) {
 		var filePathMatch = file.webkitRelativePath.match(fileNameRegex);
 		if (!filePathMatch)
 			return null;
 
 		const url = URL.createObjectURL(file);
-		const duration = await VideoEntry.analyzeDuration(url);
+		const duration = await VideoFile.analyzeDuration(url);
 		if (!duration)
 			return null;
 
-		var entry = new VideoEntry();
+		var entry = new VideoFile();
 
-		var pathCharacter = file.webkitRelativePath.indexOf("/") != "-1" ? "/" : "\\";
+		var pathCharacter = file.webkitRelativePath.indexOf("/") != -1 ? "/" : "\\";
 		var splitPath = file.webkitRelativePath.split(pathCharacter);
 
 		entry.url = url;
 		entry.fileName = splitPath[splitPath.length - 1];
-		entry.eventFolderName = VideoEntry.getEventFolderName(splitPath);
-		entry.type = VideoEntry.getClipType(splitPath);
-		entry.date = new Date(`${filePathMatch.groups.year}-${filePathMatch.groups.month}-${filePathMatch.groups.day}T${filePathMatch.groups.hour}:${filePathMatch.groups.minute}:${filePathMatch.groups.second}`);
+		entry.eventFolderName = VideoFile.getEventFolderName(file.webkitRelativePath);
+		entry.type = VideoFile.getClipType(splitPath);
+		entry.startDate = new Date(`${filePathMatch.groups.year}-${filePathMatch.groups.month}-${filePathMatch.groups.day}T${filePathMatch.groups.hour}:${filePathMatch.groups.minute}:${filePathMatch.groups.second}`);
+		entry.endDate = new Date(entry.startDate);
+		entry.endDate.setSeconds(entry.endDate.getSeconds() + duration);
 		entry.durationInSeconds = duration;
-		entry.camera = filePathMatch.groups.camera;
+		entry.camera = filePathMatch.groups.camera as Cameras;
 
 		return entry;
 	}
@@ -44,7 +50,7 @@ export default class VideoEntry {
 			return analyzer.duration;
 
 		for (let attempt = 1; attempt <= 10; attempt++) {
-			await VideoEntry.delay(5);
+			await VideoFile.delay(5);
 
 			if (analyzer.duration)
 				return analyzer.duration;
@@ -59,13 +65,9 @@ export default class VideoEntry {
 		return new Promise<void>(resolve => setTimeout(resolve, ms));
 	}
 
-	private static getEventFolderName(splitPath): string {
-		if (splitPath.length == 1)
-			return null;
-
-		var parentFolderName = splitPath[splitPath.length - 2];
-		if (parentFolderName.match(eventFolderRegex))
-			return parentFolderName;
+	private static getEventFolderName(path: string): string {
+		const match = path.match(eventFolderRegex);
+		return match ? match.groups["event"] : null;
 	}
 
 	private static getClipType(splitPath): VideoEntryTypes {
