@@ -40,3 +40,20 @@
 #video-track-slider {
 	width: 100%;
 }
+
+.slider-wrapper {
+	position: relative;
+	
+	.event-marker {
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background-color: #F00;;
+		transform: translate(-50%, -50%);
+		top: 50%;
+		left: 0;
+		pointer-events: none;
+		opacity: 0.75;
+	}
+}

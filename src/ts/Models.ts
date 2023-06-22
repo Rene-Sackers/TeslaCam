@@ -1,3 +1,6 @@
+import Enumerable = require("linq");
+import { VideoFile } from "./VideoFile";
+
 export enum Cameras {
 	Front = "front",
 	LeftRepeater = "left_repeater",
@@ -41,5 +44,27 @@ export interface TeslaCamEvent {
 	est_lat: string;
 	est_lon: string;
 	reason: string;
-	timestamp: Date|string;
+	timestamp: Date;
+}
+
+export class VideoSegment {
+	startDate: Date;
+	endDate: Date;
+	cameraFront: VideoFile;
+	cameraLeft: VideoFile;
+	cameraRight: VideoFile;
+	cameraBack: VideoFile;
+
+	constructor(startDate: Date, videoFiles: VideoFile[])
+	{
+		const enumerable = Enumerable.from(videoFiles);
+
+		this.startDate = startDate;
+		this.endDate = new Date(startDate);
+		this.endDate.setSeconds(this.endDate.getSeconds() + enumerable.first().durationInSeconds);
+		this.cameraFront = enumerable.first(v => v.camera == Cameras.Front);
+		this.cameraLeft = enumerable.first(v => v.camera == Cameras.LeftRepeater);
+		this.cameraRight = enumerable.first(v => v.camera == Cameras.RightRepeater);
+		this.cameraBack = enumerable.first(v => v.camera == Cameras.Back);
+	}
 }

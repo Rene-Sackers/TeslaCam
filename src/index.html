@@ -25,8 +25,12 @@
 				</div>
 		</div>
 		<div class="video-controls">
-			<input id="video-track-slider" type="range" />
-			
+			<div class="slider-wrapper">
+				<input id="video-track-slider" type="range" />
+				<div id="event-marker" class="event-marker"></div>
+			</div>
+			<select id="event-select"></select>
+			<button id="play-button">Play/Pause</button>
 		</div>
 		
 		<script src="js/bundle.js"></script>
