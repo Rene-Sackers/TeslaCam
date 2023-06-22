@@ -122,7 +122,7 @@ function playClip(clip: Clip) {
 }
 
 function loadSegment(videoSegment: VideoSegment) {
-	console.log("Load segment: " + videoSegment.cameraFront.fileName);
+	currentSegment = videoSegment;
 	videoPlayerFront.src = videoSegment.cameraFront.url;
 	videoPlayerLeft.src = videoSegment.cameraLeft.url;
 	videoPlayerRight.src = videoSegment.cameraRight.url;
@@ -135,8 +135,7 @@ function seekTo(seconds: number) {
 
 	if (!currentSegment || seekToDate < currentSegment.startDate || seekToDate > currentSegment.endDate)
 	{
-		currentSegment = currentClip.getSegmentAtDate(seekToDate);
-		loadSegment(currentSegment);
+		loadSegment(currentClip.getSegmentAtDate(seekToDate));
 	}
 
 	const seekSecondsInCurrentSegment = (seekToDate.getTime() - currentSegment.startDate.getTime()) / 1000;
@@ -193,7 +192,7 @@ videoPlayerFront.addEventListener("ended", () => {
 		return;
 
 	loadSegment(currentClip.videoSegments.elementAt(currentSegmentIndex + 1));
-	manipulatePlayers(p => p.play());
+	setTimeout(() => manipulatePlayers(p => p.play()), 100);	
 });
 
 eventSelect.addEventListener("change", () => playClip(clips[eventSelect.value]));
