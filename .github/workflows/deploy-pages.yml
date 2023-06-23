@@ -5,14 +5,12 @@ on:
     branches:
       - release
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -35,7 +33,7 @@ jobs:
           
       - name: gulp publish
         run: |
-          cd ./src/
+          cd src/
           npm install
           gulp publish
           
@@ -45,7 +43,19 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1.0.9
         with:
-          path: './src/publish/'
+          path: "src/publish/"
+
+      - name: Zip Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          filename: "release.zip"
+          directory: "src/publish/"
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "src/publish/release.zip"
+          tag_name: "v${{env.VERSION}}"
           
       - name: Deploy to GitHub Pages
         id: deployment
