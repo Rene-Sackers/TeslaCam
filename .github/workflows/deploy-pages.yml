@@ -33,7 +33,7 @@ jobs:
           
       - name: gulp publish
         run: |
-          cd ./src/
+          cd src/
           npm install
           gulp publish
           
@@ -43,18 +43,18 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1.0.9
         with:
-          path: "./src/publish/"
+          path: "src/publish/"
 
       - name: Zip Release
         uses: thedoctor0/zip-release@0.7.1
         with:
           filename: "release.zip"
-          path: "./src/publish/"
+          directory: "src/publish/"
 
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          files: "release.zip"
+          files: "src/publish/release.zip"
           tag_name: "v$VERSION"
           
       - name: Deploy to GitHub Pages
