@@ -2,10 +2,10 @@ var rimraf = require("gulp-rimraf");
 var browserSync = require('browser-sync').create();
 var gulp = require("gulp");
 var sourcemaps = require("gulp-sourcemaps");
-var plumber = require("gulp-plumber");
 
 var browserify = require("browserify");
 var tsify = require("tsify");
+var uglify = require("gulp-uglify");
 
 var sass = require("gulp-sass")(require("sass"));
 var cleanCss = require("gulp-clean-css");
@@ -17,9 +17,6 @@ var paths = {
 	typescript: {
 		src: "ts/**/*.ts"
 	},
-	browserify: {
-		dest: "js/"
-	},
 	scss: {
 		base: "scss/",
 		src: "scss/**/*.scss"
@@ -28,6 +25,10 @@ var paths = {
 		minifySrc: ["css/**/*.css", "!css/**/*.min.scss"],
 		src: "css/**/*.css",
 		dest: "css/"
+	},
+	js: {
+		minifySrc: ["js/**/*.js", "!js/**/*.min.js"],
+		dest: "js/"
 	}
 }
 
@@ -45,7 +46,7 @@ function browserifyScripts() {
 			console.log(err.message);
 		})
 		.pipe(source("bundle.js"))
-		.pipe(gulp.dest(paths.browserify.dest));
+		.pipe(gulp.dest(paths.js.dest));
 }
 
 function cleanCssTask() {
@@ -69,7 +70,14 @@ function minifyStyles() {
 		.pipe(gulp.dest(paths.css.dest));
 }
 
-var buildStyles = gulp.series(cleanCssTask, buildScss, minifyStyles);
+function minifyScripts() {
+	return gulp.src(paths.js.minifySrc)
+		.pipe(uglify())
+        .pipe(rename({ extname: ".min.js" }))
+		.pipe(gulp.dest(paths.js.dest));
+}
+
+var buildStyles = gulp.series(cleanCssTask, buildScss);
 
 function watch() {
 	gulp.watch(paths.typescript.src, browserifyScripts);
@@ -87,6 +95,10 @@ function serve() {
 }
 
 exports.default = gulp.parallel(browserifyScripts, buildStyles);
+exports.publish = gulp.parallel(
+	gulp.series(browserifyScripts, minifyScripts),
+	gulp.series(buildStyles, minifyStyles)
+);
 exports.scripts = browserifyScripts;
 exports.styles = buildStyles;
 exports.watch = watch;
