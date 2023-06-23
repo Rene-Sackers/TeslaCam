@@ -46,7 +46,7 @@ jobs:
           path: './src/publish/'
 
       - name: Zip Release
-        uses: TheDoctor0/zip-release@0.7.1
+        uses: thedoctor0/zip-release@0.7.1
         with:
           filename: "release.zip"
           path: "./src/publish/
