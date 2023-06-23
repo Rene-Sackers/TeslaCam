@@ -2,6 +2,7 @@ var rimraf = require("gulp-rimraf");
 var browserSync = require('browser-sync').create();
 var gulp = require("gulp");
 var sourcemaps = require("gulp-sourcemaps");
+var htmlReplace = require("gulp-html-replace");
 
 var browserify = require("browserify");
 var tsify = require("tsify");
@@ -77,6 +78,15 @@ function minifyScripts() {
 		.pipe(gulp.dest(paths.js.dest));
 }
 
+function useMinifiedJsCss() {
+	return gulp.src("index.html")
+		.pipe(htmlReplace({
+			"css": "css/styles.min.css",
+			"js": "js/bundle.min.js"
+		}))
+		.pipe(gulp.dest("./"));
+}
+
 var buildStyles = gulp.series(cleanCssTask, buildScss);
 
 function watch() {
@@ -97,7 +107,8 @@ function serve() {
 exports.default = gulp.parallel(browserifyScripts, buildStyles);
 exports.publish = gulp.parallel(
 	gulp.series(browserifyScripts, minifyScripts),
-	gulp.series(buildStyles, minifyStyles)
+	gulp.series(buildStyles, minifyStyles),
+	useMinifiedJsCss
 );
 exports.scripts = browserifyScripts;
 exports.styles = buildStyles;
