@@ -1,4 +1,3 @@
-var rimraf = require("gulp-rimraf");
 var browserSync = require('browser-sync').create();
 var gulp = require("gulp");
 var sourcemaps = require("gulp-sourcemaps");
@@ -50,11 +49,6 @@ function browserifyScripts() {
 		.pipe(gulp.dest(paths.js.dest));
 }
 
-function cleanCssTask() {
-	return gulp.src(paths.css.src, { allowEmpty: true, read: false })
-		.pipe(rimraf({force: true}));
-}
-
 function buildScss() {
 	return gulp.src(paths.scss.src, { base: paths.scss.base })
 		.pipe(sourcemaps.init())
@@ -87,11 +81,9 @@ function useMinifiedJsCss() {
 		.pipe(gulp.dest("./"));
 }
 
-var buildStyles = gulp.series(cleanCssTask, buildScss);
-
 function watch() {
 	gulp.watch(paths.typescript.src, browserifyScripts);
-	gulp.watch(paths.scss.src, buildStyles);
+	gulp.watch(paths.scss.src, buildScss);
 }
 
 function serve() {
@@ -100,17 +92,17 @@ function serve() {
 	});
 
 	gulp.watch(paths.typescript.src, gulp.series(browserifyScripts, (cb) => { browserSync.reload(); cb(); }))
-	gulp.watch(paths.scss.src, gulp.series(buildStyles, (cb) => { browserSync.reload(); cb(); }))
+	gulp.watch(paths.scss.src, gulp.series(buildScss, (cb) => { browserSync.reload(); cb(); }))
 	gulp.watch(["./**/*.html"]).on("change", browserSync.reload);
 }
 
-exports.default = gulp.parallel(browserifyScripts, buildStyles);
+exports.default = gulp.parallel(browserifyScripts, buildScss);
 exports.publish = gulp.parallel(
 	gulp.series(browserifyScripts, minifyScripts),
-	gulp.series(buildStyles, minifyStyles),
+	gulp.series(buildScss, minifyStyles),
 	useMinifiedJsCss
 );
 exports.scripts = browserifyScripts;
-exports.styles = buildStyles;
+exports.styles = buildScss;
 exports.watch = watch;
 exports.serve = serve;
