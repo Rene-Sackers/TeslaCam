@@ -22,13 +22,17 @@ var paths = {
 		src: "scss/**/*.scss"
 	},
 	css: {
-		minifySrc: ["css/**/*.css", "!css/**/*.min.scss"],
+		minifySrc: ["css/**/*.css", "!css/**/*.min.css"],
 		src: "css/**/*.css",
 		dest: "css/"
 	},
 	js: {
 		minifySrc: ["js/**/*.js", "!js/**/*.min.js"],
 		dest: "js/"
+	},
+	publish: {
+		dest: "publish/",
+		sourceIndexHtml: "index.html"
 	}
 }
 
@@ -62,23 +66,23 @@ function minifyStyles() {
 	return gulp.src(paths.css.minifySrc)
 		.pipe(cleanCss())
 		.pipe(rename({ extname: ".min.css" }))
-		.pipe(gulp.dest(paths.css.dest));
+		.pipe(gulp.dest(paths.publish.dest));
 }
 
 function minifyScripts() {
 	return gulp.src(paths.js.minifySrc)
 		.pipe(uglify())
         .pipe(rename({ extname: ".min.js" }))
-		.pipe(gulp.dest(paths.js.dest));
+		.pipe(gulp.dest(paths.publish.dest));
 }
 
-function useMinifiedJsCss() {
-	return gulp.src("index.html")
+function publishHtml() {
+	return gulp.src(paths.publish.sourceIndexHtml)
 		.pipe(htmlReplace({
-			"css": "css/styles.min.css",
-			"js": "js/bundle.min.js"
+			"css": "styles.min.css",
+			"js": "bundle.min.js"
 		}))
-		.pipe(gulp.dest("./"));
+		.pipe(gulp.dest(paths.publish.dest));
 }
 
 function watch() {
@@ -96,13 +100,14 @@ function serve() {
 	gulp.watch(["./**/*.html"]).on("change", browserSync.reload);
 }
 
-exports.default = gulp.parallel(browserifyScripts, buildScss);
-exports.publish = gulp.parallel(
-	gulp.series(browserifyScripts, minifyScripts),
-	gulp.series(buildScss, minifyStyles),
-	useMinifiedJsCss
-);
 exports.scripts = browserifyScripts;
 exports.styles = buildScss;
 exports.watch = watch;
 exports.serve = serve;
+
+exports.default = gulp.parallel(browserifyScripts, buildScss);
+exports.publish = gulp.parallel(
+	gulp.series(browserifyScripts, minifyScripts),
+	gulp.series(buildScss, minifyStyles),
+	publishHtml
+);
