@@ -55,7 +55,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: "src/publish/release.zip"
-          tag_name: "v${{ VERSION }}"
+          tag_name: "v${{env.VERSION}}"
           
       - name: Deploy to GitHub Pages
         id: deployment
