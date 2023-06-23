@@ -43,13 +43,13 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1.0.9
         with:
-          path: './src/publish/'
+          path: "./src/publish/"
 
       - name: Zip Release
         uses: thedoctor0/zip-release@0.7.1
         with:
           filename: "release.zip"
-          path: "./src/publish/
+          path: "./src/publish/"
 
       - name: Create release
         uses: softprops/action-gh-release@v1
