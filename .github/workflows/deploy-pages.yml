@@ -44,6 +44,17 @@ jobs:
         uses: actions/upload-pages-artifact@v1.0.9
         with:
           path: './src/publish/'
+
+      - name: Zip Release
+        uses: TheDoctor0/zip-release@0.7.1
+        with:
+          filename: "release.zip"
+          path: "./src/publish/
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "release.zip"
           
       - name: Deploy to GitHub Pages
         id: deployment
